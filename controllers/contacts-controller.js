@@ -1,32 +1,32 @@
-const contactsService = require("../models/index");
+// const contactsService = require("../models/index");
 const { HttpError } = require("../helpers/index.js");
 const { ctrlWrapper } = require("../utils/");
+const Contacts = require('../models/contacts.js')
 
 const getListContacts = async (req, res, next) => {
-  res.json(await contactsService.listContacts());
+  const contacts = await Contacts.find();
+  res.json(contacts);
 };
 
 const getContactById = async (req, res, next) => {
-    // console.log(req.query)
-    // console.log(req.params)
-  const contact = await contactsService.getContactById(req.params.contactId);
-//   console.log('GET by ID', contact)
+  const contact = await Contacts.findById(req.params.contactId);
   if (!contact) throw HttpError(404);
 
   res.status(200).json(contact);
 };
 
 const postContact = async (req, res, next) => {
-  const contact = await contactsService.addContact(req.body);
+  const contact = await Contacts.create(req.body);
 
   res.status(201).json(contact);
 };
 
 const deleteContactByid = async (req, res, next) => {
-  const contact = await contactsService.removeContact(req.params.contactId);
-//   console.log('DELETE by id', contact)
-  if (!contact) throw HttpError(404);
-
+  const { contactId } = req.params;
+  const contact = await Contacts.findByIdAndDelete(contactId);
+  
+  if (!contact) throw HttpError(404, `contact with id ${contactId} not found`);
+  
   res.json({
     message: "Contact deleted",
   });
@@ -34,14 +34,8 @@ const deleteContactByid = async (req, res, next) => {
 
 const putContactById = async (req, res, next) => {
   const { contactId } = req.params;
-  const { name, email, phone } = req.body;
 
-  const contact = await contactsService.updateContact(contactId, {
-    name,
-    email,
-    phone,
-  });
-
+  const contact = await Contacts.findByIdAndUpdate(contactId, req.body, {new: true})
   if (!contact) {
     throw HttpError(404);
   }

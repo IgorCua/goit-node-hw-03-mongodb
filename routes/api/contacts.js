@@ -6,6 +6,7 @@ const {
   deleteContactByid,
   putContactById
 } = require('../../controllers/contacts-controller.js');
+const { isValidId } = require('../../middlewares')
 const validateBody = require('../../utils/validateBody.js');
 const { contactsSchema } = require('../../schemas')
 
@@ -13,12 +14,12 @@ const router = express.Router()
 
 router.get('/', getListContacts)
 
-router.get('/:contactId', getContactById)
+router.get('/:contactId', isValidId, getContactById)
 
 router.post('/', validateBody(contactsSchema), postContact)
 
-router.delete('/:contactId', deleteContactByid)
+router.delete('/:contactId', isValidId, deleteContactByid)
 
-router.put('/:contactId', validateBody(contactsSchema), putContactById)
+router.put('/:contactId', isValidId, validateBody(contactsSchema), putContactById)
 
 module.exports = router
