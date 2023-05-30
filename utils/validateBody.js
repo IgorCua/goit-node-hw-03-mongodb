@@ -2,6 +2,10 @@ const { HttpError } = require('../helpers')
 
 const validateBody = schema => {
     const func = (req, res, next) => {
+        // console.log(req.route.methods)
+        const reqMethod = Object.keys(req.route.methods).join('');
+        // console.log(reqMethod)
+        if (reqMethod === 'patch' && Object.keys(req.body).length === 0) throw HttpError(400, "Missing field favorite");
         if (Object.keys(req.body).length === 0) throw HttpError(400, "Missing fields");
         
         const { error } = schema.validate(req.body, {
